@@ -108,13 +108,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_GRV,           KC_TILD,         KC_HASH,         KC_AMPR,           KC_PIPE,                  KC_NO,             BANANA1,           BANANA2,           TD(U_TD_U_G0),     TD(U_TD_BOOT),
         KC_EXLM,          KC_UNDS,         KC_COLN,         KC_EQL,            KC_DLR,                   KC_NO,             KC_LSFT,           KC_LGUI,           KC_LALT,           KC_LCTL,
         KC_PERC,          KC_QUES,         KC_ASTR,         KC_PLUS,           KC_BSLS,                  KC_NO,             KC_NO,             KC_NO,             KC_ALGR,           KC_NO,
-                                           KC_NO,           KC_NO,             KC_NO,                    KC_NO,             KC_NO,             KC_NO
+                                           RALT(KC_E),      RALT(KC_GRV),      RALT(KC_QUOT),            KC_NO,             KC_NO,             KC_NO
     ),
     [U_SYMR] = LAYOUT_miryoku(
         TD(U_TD_BOOT),    TD(U_TD_U_G0),   BANANA2,         BANANA1,           KC_NO,                    KC_CIRC,           KC_LCBR,           KC_RCBR,           KC_LBRC,           KC_RBRC,
         KC_LCTL,          KC_LALT,         KC_LGUI,         KC_LSFT,           KC_NO,                    KC_AT,             KC_LPRN,           KC_RPRN,           KC_UNDS,           KC_SCLN,
         KC_NO,            KC_ALGR,         KC_NO,           KC_NO,             KC_NO,                    KC_SLSH,           KC_MINS,           KC_LABK,           KC_RABK,           KC_DQUO,
-                                           KC_NO,           KC_NO,             KC_NO,                    KC_NO,             KC_NO,             KC_NO
+                                           KC_NO,           KC_NO,             KC_NO,                    RALT(KC_QUOT),     RALT(KC_GRV),      RALT(KC_E)
     ),
     [U_NAV] = LAYOUT_miryoku(
         TD(U_TD_BOOT),    TD(U_TD_U_G0),   BANANA2,         BANANA1,           KC_NO,                    KC_AGIN,           KC_PSTE,           KC_COPY,           KC_CUT,            KC_UNDO,
