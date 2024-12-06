@@ -124,9 +124,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                            KC_NO,           KC_NO,             KC_NO,                    KC_ENT,            KC_BSPC,           KC_DEL
     ),
     [U_NAVM] = LAYOUT_miryoku(
-        TD(U_TD_BOOT),    TD(U_TD_U_G0),   BANANA2,         BANANA1,           KC_NO,                    RGB_MOD,           RGB_HUI,           RGB_SAI,           RGB_VAI,           RGB_TOG,
-        KC_LCTL,          KC_LALT,         KC_LGUI,         KC_LSFT,           KC_NO,                    KC_LEFT,           KC_DOWN,           KC_UP,             KC_RGHT,           CW_TOGG,
-        KC_NO,            KC_ALGR,         KC_NO,           KC_NO,             KC_NO,                    KC_MPRV,           KC_VOLD,           KC_VOLU,           KC_MNXT,           KC_MPLY,
+        TD(U_TD_BOOT),    TD(U_TD_U_G0),   BANANA2,         BANANA1,           DT_UP,                    RGB_MOD,           RGB_HUI,           RGB_SAI,           RGB_VAI,           RGB_TOG,
+        KC_LCTL,          KC_LALT,         KC_LGUI,         KC_LSFT,           DT_DOWN,                  KC_LEFT,           KC_DOWN,           KC_UP,             KC_RGHT,           CW_TOGG,
+        KC_NO,            KC_ALGR,         KC_NO,           KC_NO,             DT_PRNT,                  KC_MPRV,           KC_VOLD,           KC_VOLU,           KC_MNXT,           KC_MPLY,
                                            KC_NO,           KC_NO,             KC_NO,                    KC_NO,             KC_NO,             KC_NO
     ),
     [U_MOUSE] = LAYOUT_miryoku(
