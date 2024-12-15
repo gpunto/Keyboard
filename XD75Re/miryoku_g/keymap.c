@@ -88,16 +88,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TRNS,         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_MPLY, KC_TRNS, KC_MPLY, KC_TRNS, QK_BOOT, KC_TRNS
     ),
     [U_BASE] = LAYOUT_miryoku(
-        KC_Q,             KC_W,            KC_E,              KC_R,             KC_T,                    KC_Y,              KC_U,              KC_I,              KC_O,              KC_P,
+        KC_Q,             KC_W,            KC_E,              LT(U_MOUSE,KC_R), KC_T,                    KC_Y,              KC_U,              KC_I,              KC_O,              KC_P,
         LCTL_T(KC_A),     LALT_T(KC_S),    LGUI_T(KC_D),      LSFT_T(KC_F),     KC_G,                    KC_H,              LSFT_T(KC_J),      LGUI_T(KC_K),      LALT_T(KC_L),      LCTL_T(KC_QUOT),
-        LT(U_MOUSE,KC_Z), ALGR_T(KC_X),    KC_C,              KC_V,             KC_B,                    KC_N,              KC_M,              KC_COMM,           ALGR_T(KC_DOT),    KC_SLSH,
+        KC_Z,             ALGR_T(KC_X),    KC_C,              KC_V,             KC_B,                    KC_N,              KC_M,              KC_COMM,           ALGR_T(KC_DOT),    KC_SLSH,
                                            LT(U_MEDIA,KC_ESC),LT(U_SYMR,KC_SPC),LT(U_NAV,KC_TAB),        LT(U_NUM,KC_ENT),  LT(U_SYML,KC_BSPC),LT(U_FUN,KC_DEL)
     ),
     [U_NUM] = LAYOUT_miryoku(
-        KC_LBRC,          KC_7,            KC_8,            KC_9,              KC_RBRC,                  KC_NO,             BANANA1,           BANANA2,           TD(U_TD_U_G0),     TD(U_TD_BOOT),
-        KC_SCLN,          KC_4,            KC_5,            KC_6,              KC_EQL,                   KC_NO,             KC_LSFT,           KC_LGUI,           KC_LALT,           KC_LCTL,
-        KC_GRV,           KC_1,            KC_2,            KC_3,              KC_BSLS,                  KC_NO,             KC_NO,             KC_NO,             KC_ALGR,           KC_NO,
-                                           KC_DOT,          KC_0,              KC_MINS,                  KC_NO,             KC_NO,             KC_NO
+        KC_PLUS,          KC_7,            KC_8,            KC_9,              KC_ASTR,                  KC_NO,             BANANA1,           BANANA2,           TD(U_TD_U_G0),     TD(U_TD_BOOT),
+        KC_COMM,          KC_4,            KC_5,            KC_6,              KC_EQL,                   KC_NO,             KC_LSFT,           KC_LGUI,           KC_LALT,           KC_LCTL,
+        KC_MINS,          KC_1,            KC_2,            KC_3,              KC_SLSH,                  KC_NO,             KC_NO,             KC_NO,             KC_ALGR,           KC_NO,
+                                           KC_DOT,          KC_SPC,            KC_0,                     KC_NO,             KC_NO,             KC_NO
     ),
     [U_FUN] = LAYOUT_miryoku(
         KC_F12,           KC_F7,           KC_F8,           KC_F9,             KC_PSCR,                  KC_NO,             BANANA1,           BANANA2,           TD(U_TD_U_G0),     TD(U_TD_BOOT),
