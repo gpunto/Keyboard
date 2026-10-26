@@ -28,7 +28,6 @@ G_LAYER_X(SYML,  "SymL") \
 G_LAYER_X(SYMR,  "SymR") \
 G_LAYER_X(FUN,   "Fun") \
 G_LAYER_X(NAV,   "Nav") \
-G_LAYER_X(NAVM,  "NavMedia") \
 G_LAYER_X(MOUSE, "Mouse") \
 G_LAYER_X(MEDIA, "Media")
 
@@ -107,12 +106,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LCTL,          KC_LALT,         KC_LGUI,         KC_LSFT,           KC_NO,                    KC_LEFT,           KC_DOWN,           KC_UP,             KC_RGHT,           CW_TOGG,
         KC_NO,            KC_ALGR,         KC_NO,           KC_NO,             KC_NO,                    KC_HOME,           KC_PGDN,           KC_PGUP,           KC_END,            KC_INS,
                                            KC_NO,           KC_NO,             KC_NO,                    KC_ENT,            KC_BSPC,           KC_DEL
-    ),
-    [U_NAVM] = LAYOUT_miryoku(
-        TD(U_TD_BOOT),    BANANA3,         BANANA2,         BANANA1,           DT_UP,                    UG_NEXT,           UG_HUEU,           UG_SATU,           UG_VALU,           UG_TOGG,
-        KC_LCTL,          KC_LALT,         KC_LGUI,         KC_LSFT,           DT_DOWN,                  KC_LEFT,           KC_DOWN,           KC_UP,             KC_RGHT,           CW_TOGG,
-        KC_NO,            KC_ALGR,         KC_NO,           KC_NO,             DT_PRNT,                  KC_MPRV,           KC_VOLD,           KC_VOLU,           KC_MNXT,           KC_MPLY,
-                                           KC_NO,           KC_NO,             KC_NO,                    KC_NO,             KC_NO,             KC_NO
     ),
     [U_MOUSE] = LAYOUT_miryoku(
         TD(U_TD_BOOT),    BANANA3,         BANANA2,         BANANA1,           KC_NO,                    KC_AGIN,           KC_PSTE,           KC_COPY,           KC_CUT,            KC_UNDO,
