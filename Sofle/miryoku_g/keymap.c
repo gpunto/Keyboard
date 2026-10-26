@@ -19,7 +19,7 @@ XXX, K20, K21, K22, K23, K24, XXX,      XXX, K25, K26, K27, K28, K29, XXX,\
 // Placeholders
 #define BANANA1 KC_NO
 #define BANANA2 KC_NO
-#define BANANA3 KC_NO
+#define BANANA3 TD(U_TD_U_GAME) // double-tap to switch to the gaming layer
 
 // Custom keycodes
 
@@ -29,6 +29,8 @@ enum custom_keycodes {
 
 #define G_LAYER_LIST \
 G_LAYER_X(BASE,  "Base") \
+G_LAYER_X(GAME,  "Game") \
+G_LAYER_X(GAMEFN, "GFn") \
 G_LAYER_X(NUM,   "Num") \
 G_LAYER_X(SYML,  "SymL") \
 G_LAYER_X(SYMR,  "SymR") \
@@ -77,6 +79,22 @@ G_LAYER_LIST
 // Keymap
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+    // Plain keys only (no tap-hold) so every press registers instantly; everything a mouse game needs is on the left half,
+    // and the only GUI key is on the right thumb, out of reach while the right hand is on the mouse
+    [U_GAME] = LAYOUT(
+        KC_ESC,  KC_1,    KC_2,    KC_3,         KC_4,    KC_5,                       KC_6,    KC_7,         KC_8,    KC_9,    KC_0,    KC_BSPC,
+        KC_TAB,  KC_Q,    KC_W,    KC_E,         KC_R,    KC_T,                       KC_Y,    KC_U,         KC_I,    KC_O,    KC_P,    KC_ENT,
+        KC_LSFT, KC_A,    KC_S,    KC_D,         KC_F,    KC_G,                       KC_H,    KC_J,         KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+        KC_LCTL, KC_Z,    KC_X,    KC_C,         KC_V,    KC_B,    KC_MUTE,  KC_MPLY, KC_N,    KC_M,         KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
+                          KC_LALT, KC_F13,       MO(U_GAMEFN), KC_SPC, KC_ENT,  KC_SPC, MO(U_GAMEFN), KC_RCTL, KC_RGUI, XXX
+    ),
+    [U_GAMEFN] = LAYOUT(
+        TD(U_TD_U_BASE), KC_F1, KC_F2, KC_F3,   KC_F4,   KC_F5,                      KC_F6,   KC_F7,        KC_F8,   KC_F9,   KC_F10,  KC_F11,
+        _______, _______, _______, _______,      _______, KC_PSCR,                    _______, _______,      _______, _______, _______, KC_F12,
+        _______, _______, _______, _______,      _______, _______,                    KC_LEFT, KC_DOWN,      KC_UP,   KC_RGHT, _______, _______,
+        _______, KC_MPRV, KC_MPLY, KC_MNXT,      KC_VOLD, KC_VOLU, _______, _______,  _______, _______,      _______, _______, _______, TD(U_TD_BOOT),
+                          _______, _______,      _______, _______, _______, _______,  _______, _______,      _______, _______
+    ),
     [U_BASE] = LAYOUT_miryoku(
         KC_Q,             KC_W,            KC_E,              LT(U_MOUSE,KC_R), KC_T,                    KC_Y,              KC_U,              KC_I,              KC_O,              KC_P,
         LCTL_T(KC_A),     LALT_T(KC_S),    LGUI_T(KC_D),      LSFT_T(KC_F),     KC_G,                    KC_H,              LSFT_T(KC_J),      LGUI_T(KC_K),      LALT_T(KC_L),      LCTL_T(KC_QUOT),
@@ -318,7 +336,7 @@ static void render_luna(int LUNA_X, int LUNA_Y) {
 static void render_primary(void) {
     oled_write_P(PSTR("\n\n"), false);
 
-    switch (get_highest_layer(layer_state)) {
+    switch (get_highest_layer(layer_state | default_layer_state)) {
 #define G_LAYER_X(LAYER, STRING) case U_##LAYER:\
         oled_write_P(PSTR(STRING), false);\
         oled_write_P(PSTR("\n"), false);\
@@ -361,9 +379,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 tap_code16(os == OS_MACOS || os == OS_IOS ? LSA(KC_2) : RALT(KC_5));
             }
             return false;
-        // Space is a layer-tap key, so match the tap instead of plain KC_SPC
+        // Space is a layer-tap key on Miryoku, so match the tap; plain KC_SPC is the gaming layer
+        case KC_SPC:
         case LT(U_SYMR, KC_SPC):
-            if (record->tap.count && record->event.pressed) {
+            if (record->event.pressed && (keycode == KC_SPC || record->tap.count)) {
                 isJumping  = true;
                 showedJump = false;
             } else {
