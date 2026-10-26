@@ -1,0 +1,103 @@
+# keymap-drawer settings for the miryoku_g layer diagrams (see tools/draw-layers.sh)
+parse_config:
+  qmk_remove_keycode_prefix: [KC_, MS_, UG_]
+  trans_legend: {t: ▽, type: trans}
+  layer_legend_map:
+    GAMEFN: GFn
+  qmk_keycode_map:
+    'NO': ''
+    TAB: Tab
+    ESC: Esc
+    DEL: Del
+    LCTL: Ctrl
+    RCTL: Ctrl
+    LALT: Alt
+    RALT: Alt
+    ALGR: AltGr
+    LGUI: Cmd
+    RGUI: Cmd
+    LSFT: Shift
+    RSFT: Shift
+    SPC: Space
+    ENT: Enter
+    BSPC: Bksp
+    QUOT: "'"
+    COMM: ","
+    DOT: "."
+    SLSH: /
+    SCLN: ;
+    GRV: "`"
+    TILD: "~"
+    HASH: "#"
+    AMPR: "&"
+    PIPE: "|"
+    EXLM: "!"
+    UNDS: _
+    COLN: ":"
+    DLR: $
+    PERC: "%"
+    QUES: "?"
+    BSLS: \
+    CIRC: ^
+    LCBR: "{"
+    RCBR: "}"
+    LBRC: "["
+    RBRC: "]"
+    AT: "@"
+    LPRN: (
+    RPRN: )
+    LABK: <
+    RABK: ">"
+    DQUO: '"'
+    PLUS: +
+    ASTR: "*"
+    EQL: "="
+    MINS: "-"
+    LEFT: ←
+    DOWN: ↓
+    UP: ↑
+    RGHT: →
+    PGUP: PgUp
+    PGDN: PgDn
+    MPRV: ⏮
+    MNXT: ⏭
+    MPLY: ⏯
+    MSTP: ⏹
+    VOLU: Vol+
+    VOLD: Vol−
+    MUTE: Mute
+    PSCR: PrtSc
+    SCRL: ScrLk
+    PAUS: Pause
+    APP: Menu
+    AGIN: Redo
+    PSTE: Paste
+    COPY: Copy
+    UNDO: Undo
+  raw_binding_map:
+    TD(U_TD_BOOT): {t: Boot, s: 2× tap, type: sys}
+    TD(U_TD_U_BASE): {t: Base, s: 2× tap}
+    TD(U_TD_U_GAME): {t: Game, s: 2× tap}
+    U_EURO: €
+    RALT(KC_E): {t: "´", s: dead key}
+    RALT(KC_GRV): {t: "`", s: dead key}
+    CW_TOGG: Caps Word
+    MS_LEFT: {t: ←, s: pointer}
+    MS_DOWN: {t: ↓, s: pointer}
+    MS_UP: {t: ↑, s: pointer}
+    MS_RGHT: {t: →, s: pointer}
+    MS_WHLL: {t: ←, s: wheel}
+    MS_WHLD: {t: ↓, s: wheel}
+    MS_WHLU: {t: ↑, s: wheel}
+    MS_WHLR: {t: →, s: wheel}
+    MS_BTN1: {t: Left, s: click}
+    MS_BTN2: {t: Right, s: click}
+    MS_BTN3: {t: Mid, s: click}
+    UG_NEXT: {t: Mode, s: RGB}
+    UG_HUEU: {t: "Hue+", s: RGB}
+    UG_SATU: {t: "Sat+", s: RGB}
+    UG_VALU: {t: "Bri+", s: RGB}
+    UG_TOGG: {t: On/Off, s: RGB}
+    DT_UP: {t: "Term+", s: tapping}
+    DT_DOWN: {t: Term−, s: tapping}
+    DT_PRNT: {t: "Term?", s: tapping}
