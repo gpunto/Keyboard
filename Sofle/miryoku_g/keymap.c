@@ -350,8 +350,105 @@ static void render_primary(void) {
     render_luna(0, 13);
 }
 
+// Game of Life start
+
+// 16x64 grid of 2x2-pixel cells on the 32x128 portrait screen, wrapping at the edges.
+// Each new key press (both halves, mirrored by the split transport) drops a random blob
+// at the key's spot, so typing makes it bloom and it fades out when you stop.
+
+#define LIFE_W 16
+#define LIFE_H 64
+#define LIFE_STEP_MS 120
+
+static uint16_t     life[LIFE_H];
+static uint32_t     life_timer = 0;
+static matrix_row_t life_prev_matrix[MATRIX_ROWS];
+static uint32_t     life_rng   = 0x9E3779B9;
+
+static uint32_t life_rand(void) {
+    life_rng ^= life_rng << 13;
+    life_rng ^= life_rng >> 17;
+    life_rng ^= life_rng << 5;
+    return life_rng;
+}
+
+static void life_seed(uint8_t row, uint8_t col) {
+    // Rows 0-4 are the left half, 5-9 the right; on the right, column 0 is the outer edge
+    bool    right = row >= MATRIX_ROWS / 2;
+    uint8_t r     = row % (MATRIX_ROWS / 2);
+    uint8_t x     = right ? 6 + (5 - col) : col; // 0..11 from left to right
+    uint8_t gx    = x * LIFE_W / 12;
+    uint8_t gy    = 4 + r * (LIFE_H - 8) / 4;
+
+    life_rng ^= timer_read32();
+    uint32_t bits = life_rand();
+    for (int8_t dy = -1; dy <= 1; dy++) {
+        for (int8_t dx = -1; dx <= 1; dx++, bits >>= 1) {
+            if (bits & 1) {
+                life[(gy + dy + LIFE_H) % LIFE_H] |= 1 << ((gx + dx + LIFE_W) % LIFE_W);
+            }
+        }
+    }
+}
+
+static void life_step(void) {
+    static uint16_t next[LIFE_H];
+    for (uint8_t y = 0; y < LIFE_H; y++) {
+        uint16_t up = life[(y + LIFE_H - 1) % LIFE_H], mid = life[y], down = life[(y + 1) % LIFE_H];
+        uint16_t row = 0;
+        for (uint8_t x = 0; x < LIFE_W; x++) {
+            uint8_t l = (x + LIFE_W - 1) % LIFE_W, r = (x + 1) % LIFE_W;
+            uint8_t n = ((up >> l) & 1) + ((up >> x) & 1) + ((up >> r) & 1) + ((mid >> l) & 1) + ((mid >> r) & 1) + ((down >> l) & 1) + ((down >> x) & 1) + ((down >> r) & 1);
+            if (n == 3 || (n == 2 && ((mid >> x) & 1))) {
+                row |= 1 << x;
+            }
+        }
+        next[y] = row;
+    }
+    memcpy(life, next, sizeof(life));
+}
+
+static void render_life(void) {
+    for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
+        matrix_row_t now     = matrix_get_row(row);
+        matrix_row_t pressed = now & ~life_prev_matrix[row];
+        for (uint8_t col = 0; col < MATRIX_COLS; col++) {
+            if (pressed & ((matrix_row_t)1 << col)) {
+                life_seed(row, col);
+            }
+        }
+        life_prev_matrix[row] = now;
+    }
+
+#    if OLED_TIMEOUT > 0
+    if (last_input_activity_elapsed() > OLED_TIMEOUT) {
+        oled_off();
+        return;
+    }
+    oled_on();
+#    endif
+
+    if (timer_elapsed32(life_timer) < LIFE_STEP_MS) {
+        return;
+    }
+    life_timer = timer_read32();
+    life_step();
+
+    for (uint8_t y = 0; y < LIFE_H; y++) {
+        for (uint8_t x = 0; x < LIFE_W; x++) {
+            bool on = (life[y] >> x) & 1;
+            oled_write_pixel(x * 2, y * 2, on);
+            oled_write_pixel(x * 2 + 1, y * 2, on);
+            oled_write_pixel(x * 2, y * 2 + 1, on);
+            oled_write_pixel(x * 2 + 1, y * 2 + 1, on);
+        }
+    }
+}
+
+// Game of Life end
+
 static void render_secondary(void) {
-  // TODO
+    render_life();
 }
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {

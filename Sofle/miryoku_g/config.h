@@ -28,3 +28,6 @@
 #undef MOUSEKEY_TIME_TO_MAX
 #define MOUSEKEY_TIME_TO_MAX    64
 
+
+// Let the right half see key activity, so its OLED times out with the left one
+#define SPLIT_ACTIVITY_ENABLE
