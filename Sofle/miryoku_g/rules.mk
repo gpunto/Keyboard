@@ -6,6 +6,7 @@ CAPS_WORD_ENABLE = yes
 KEY_OVERRIDE_ENABLE = yes
 DYNAMIC_TAPPING_TERM_ENABLE = yes
 WPM_ENABLE = yes
+OS_DETECTION_ENABLE = yes
 
 
 # The Sofle has RP2040 controllers (Ergomech Sofle V2)

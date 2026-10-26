@@ -21,6 +21,12 @@ XXX, K20, K21, K22, K23, K24, XXX,      XXX, K25, K26, K27, K28, K29, XXX,\
 #define BANANA2 KC_NO
 #define BANANA3 KC_NO
 
+// Custom keycodes
+
+enum custom_keycodes {
+    U_EURO = SAFE_RANGE,
+};
+
 #define G_LAYER_LIST \
 G_LAYER_X(BASE,  "Base") \
 G_LAYER_X(NUM,   "Num") \
@@ -93,13 +99,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_GRV,           KC_TILD,         KC_HASH,         KC_AMPR,           KC_PIPE,                  KC_NO,             BANANA1,           BANANA2,           BANANA3,           TD(U_TD_BOOT),
         KC_EXLM,          KC_UNDS,         KC_COLN,         KC_EQL,            KC_DLR,                   KC_NO,             KC_LSFT,           KC_LGUI,           KC_LALT,           KC_LCTL,
         KC_PERC,          KC_QUES,         KC_ASTR,         KC_PLUS,           KC_BSLS,                  KC_NO,             KC_NO,             KC_NO,             KC_ALGR,           KC_NO,
-                                           RALT(KC_E),      RALT(KC_GRV),      RALT(KC_QUOT),            KC_NO,             KC_NO,             KC_NO
+                                           RALT(KC_E),      RALT(KC_GRV),      U_EURO,                   KC_NO,             KC_NO,             KC_NO
     ),
     [U_SYMR] = LAYOUT_miryoku(
         TD(U_TD_BOOT),    BANANA3,         BANANA2,         BANANA1,           KC_NO,                    KC_CIRC,           KC_LCBR,           KC_RCBR,           KC_LBRC,           KC_RBRC,
         KC_LCTL,          KC_LALT,         KC_LGUI,         KC_LSFT,           KC_NO,                    KC_AT,             KC_LPRN,           KC_RPRN,           KC_EQL,            KC_SCLN,
         KC_NO,            KC_ALGR,         KC_NO,           KC_NO,             KC_NO,                    KC_SLSH,           KC_MINS,           KC_LABK,           KC_RABK,           KC_DQUO,
-                                           KC_NO,           KC_NO,             KC_NO,                    RALT(KC_QUOT),     RALT(KC_GRV),      RALT(KC_E)
+                                           KC_NO,           KC_NO,             KC_NO,                    U_EURO,            RALT(KC_GRV),      RALT(KC_E)
     ),
     [U_NAV] = LAYOUT_miryoku(
         TD(U_TD_BOOT),    BANANA3,         BANANA2,         BANANA1,           KC_NO,                    KC_AGIN,           KC_PSTE,           KC_COPY,           KC_CUT,            KC_UNDO,
@@ -305,8 +311,15 @@ bool oled_task_user(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    // Space is a layer-tap key, so match the tap instead of plain KC_SPC
     switch (keycode) {
+        case U_EURO:
+            // € differs per OS: Opt+Shift+2 on macOS, AltGr+5 on US International (Windows, Linux)
+            if (record->event.pressed) {
+                os_variant_t os = detected_host_os();
+                tap_code16(os == OS_MACOS || os == OS_IOS ? LSA(KC_2) : RALT(KC_5));
+            }
+            return false;
+        // Space is a layer-tap key, so match the tap instead of plain KC_SPC
         case LT(U_SYMR, KC_SPC):
             if (record->tap.count && record->event.pressed) {
                 isJumping  = true;
