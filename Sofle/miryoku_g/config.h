@@ -6,6 +6,11 @@
 // Enable rapid switch from tap to hold, disables double tap hold auto-repeat.
 #define QUICK_TAP_TERM 0
 
+// Home-row mods: hold only with a key on the other hand, and never while typing fast.
+#define CHORDAL_HOLD
+#define PERMISSIVE_HOLD
+#define FLOW_TAP_TERM 150
+
 // Auto Shift
 #define NO_AUTO_SHIFT_ALPHA
 #define AUTO_SHIFT_TIMEOUT TAPPING_TERM

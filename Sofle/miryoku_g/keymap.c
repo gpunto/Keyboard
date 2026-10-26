@@ -135,6 +135,41 @@ const key_override_t *key_overrides[] = {
     &capsword_key_override,
 };
 
+// tap-hold
+
+// Chordal Hold: thumbs are exempt ('*'), so thumb layers work with mods on their own hand (e.g. Tab+F for Shift on NAV)
+// and home-row mods work with same-hand thumbs (e.g. Cmd+Tab)
+const char chordal_hold_layout[MATRIX_ROWS][MATRIX_COLS] PROGMEM = LAYOUT_miryoku(
+    'L', 'L', 'L', 'L', 'L',      'R', 'R', 'R', 'R', 'R',
+    'L', 'L', 'L', 'L', 'L',      'R', 'R', 'R', 'R', 'R',
+    'L', 'L', 'L', 'L', 'L',      'R', 'R', 'R', 'R', 'R',
+                   '*', '*', '*',      '*', '*', '*'
+);
+
+// Same-hand exception for one-handed shortcuts with the home-row Cmd/Ctrl (quit, close, new tab, find, undo/cut/copy/paste)
+bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t *tap_hold_record, uint16_t other_keycode, keyrecord_t *other_record) {
+    switch (get_tap_keycode(other_keycode)) {
+        case KC_Q:
+        case KC_W:
+        case KC_T:
+        case KC_F:
+        case KC_Z:
+        case KC_X:
+        case KC_C:
+        case KC_V:
+            return true;
+    }
+    return get_chordal_hold_default(tap_hold_record, other_record);
+}
+
+// Flow Tap: not on the Space thumb, since symbols are often needed right after a space
+uint16_t get_flow_tap_term(uint16_t keycode, keyrecord_t *record, uint16_t prev_keycode) {
+    if (keycode != LT(U_SYMR, KC_SPC) && is_flow_tap_key(keycode) && is_flow_tap_key(prev_keycode)) {
+        return FLOW_TAP_TERM;
+    }
+    return 0;
+}
+
 // display
 
 // Luna pet start
