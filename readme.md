@@ -9,7 +9,7 @@ previous
 
 ## Sofle layers
 
-Interactive version: https://gpunto.github.io/keyboard/ (click layer keys to open layers, hover for keycodes).
+Interactive version: https://gpunto.github.io/Keyboard/ (click layer keys to open layers, hover for keycodes).
 
 ![Sofle miryoku_g layers](Sofle/miryoku_g/layers.svg)
 
