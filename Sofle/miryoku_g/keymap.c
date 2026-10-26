@@ -301,6 +301,7 @@ bool oled_task_user(void) {
     current_wpm   = get_current_wpm();
     led_usb_state = host_keyboard_led_state();
     led_usb_state.caps_lock |= is_caps_word_on();
+    isSneaking = get_mods(); // any held mod; they are home-row mods, so read the active mods
 
     if (is_keyboard_master()) {
         render_primary();
@@ -311,13 +312,10 @@ bool oled_task_user(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    // Space is a layer-tap key, so match the tap instead of plain KC_SPC
     switch (keycode) {
-        case KC_LCTL:
-        case KC_RCTL:
-            isSneaking = record->event.pressed; 
-            break;
-        case KC_SPC:
-            if (record->event.pressed) {
+        case LT(U_SYMR, KC_SPC):
+            if (record->tap.count && record->event.pressed) {
                 isJumping  = true;
                 showedJump = false;
             } else {
