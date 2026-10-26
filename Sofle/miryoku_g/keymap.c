@@ -162,9 +162,16 @@ bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t *tap_hold_record, u
     return get_chordal_hold_default(tap_hold_record, other_record);
 }
 
-// Flow Tap: not on the Space thumb, since symbols are often needed right after a space
+// Flow Tap: not on the Space thumb, since symbols are often needed right after a space,
+// nor on Shift, since capitals often follow a letter quickly (e.g. "xD")
 uint16_t get_flow_tap_term(uint16_t keycode, keyrecord_t *record, uint16_t prev_keycode) {
-    if (keycode != LT(U_SYMR, KC_SPC) && is_flow_tap_key(keycode) && is_flow_tap_key(prev_keycode)) {
+    switch (keycode) {
+        case LT(U_SYMR, KC_SPC):
+        case LSFT_T(KC_F):
+        case LSFT_T(KC_J):
+            return 0;
+    }
+    if (is_flow_tap_key(keycode) && is_flow_tap_key(prev_keycode)) {
         return FLOW_TAP_TERM;
     }
     return 0;
