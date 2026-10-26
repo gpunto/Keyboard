@@ -9,6 +9,8 @@ previous
 
 ## Sofle layers
 
+Interactive version: https://gpunto.github.io/keyboard/ (click layer keys to open layers, hover for keycodes).
+
 ![Sofle miryoku_g layers](Sofle/miryoku_g/layers.svg)
 
 Hold-tap keys show their hold action at the bottom; underlined names are layers. ▽ falls through to the layer underneath.
@@ -34,7 +36,7 @@ and double-tap that half's reset button. Repeat for the other half, then plug US
 
 ## Redrawing the layer diagram
 
-After changing a keymap, regenerate its diagram (needs `uv tool install keymap-drawer`):
+After changing a keymap, regenerate its diagram and the interactive page's data (needs `uv tool install keymap-drawer`):
 
 ```
 tools/draw-layers.sh Sofle/miryoku_g sofle/rev1

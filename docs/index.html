@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miryoku G Layer Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a single-column workbench. Controls on top, the board drawn as keycaps, a keycode readout, then the legend. */
+:root {
+  --bg: oklch(0.972 0.005 255);
+  --surface: oklch(0.995 0.002 255);
+  --ink: oklch(0.25 0.02 260);
+  --muted: oklch(0.50 0.02 260);
+  --line: oklch(0.85 0.012 260);
+  --key: oklch(0.995 0.002 255);
+  --key-edge: oklch(0.78 0.014 260);
+  --mod: oklch(0.925 0.008 260);
+  --accent: oklch(0.54 0.18 268);
+  --sys: oklch(0.91 0.06 45);
+  --sys-ink: oklch(0.45 0.14 38);
+  --tint-l: 0.915; --tint-c: 0.065; --edge-l: 0.70; --hold-l: 0.47; --hold-c: 0.16;
+  --font-ui: "IBM Plex Sans Condensed", "Arial Narrow", "Helvetica Neue", system-ui, sans-serif;
+  --font-code: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: oklch(0.18 0.012 260);
+    --surface: oklch(0.215 0.014 260);
+    --ink: oklch(0.93 0.01 260);
+    --muted: oklch(0.70 0.016 260);
+    --line: oklch(0.34 0.016 260);
+    --key: oklch(0.255 0.014 260);
+    --key-edge: oklch(0.42 0.018 260);
+    --mod: oklch(0.30 0.014 260);
+    --accent: oklch(0.76 0.13 268);
+    --sys: oklch(0.34 0.08 40);
+    --sys-ink: oklch(0.86 0.10 50);
+    --tint-l: 0.335; --tint-c: 0.07; --edge-l: 0.52; --hold-l: 0.80; --hold-c: 0.13;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: oklch(0.18 0.012 260);
+  --surface: oklch(0.215 0.014 260);
+  --ink: oklch(0.93 0.01 260);
+  --muted: oklch(0.70 0.016 260);
+  --line: oklch(0.34 0.016 260);
+  --key: oklch(0.255 0.014 260);
+  --key-edge: oklch(0.42 0.018 260);
+  --mod: oklch(0.30 0.014 260);
+  --accent: oklch(0.76 0.13 268);
+  --sys: oklch(0.34 0.08 40);
+  --sys-ink: oklch(0.86 0.10 50);
+  --tint-l: 0.335; --tint-c: 0.07; --edge-l: 0.52; --hold-l: 0.80; --hold-c: 0.13;
+  color-scheme: dark;
+}
+
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.5; }
+.wrap {
+  max-width: 1100px; margin: 0 auto;
+  padding-block: 28px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 18px;
+}
+header { display: flex; flex-direction: column; gap: 4px; }
+h1 { margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+h1 small { font-weight: 400; color: var(--muted); font-size: 0.6em; letter-spacing: 0; margin-left: 6px; }
+.lede { margin: 0; color: var(--muted); max-width: 68ch; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { font: inherit; font-weight: 500; padding: 6px 14px; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.seg-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-right: 6px; }
+.group { display: inline-flex; align-items: center; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px; font: inherit; font-weight: 500; font-size: 14px;
+  padding: 4px 12px 4px 10px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.chip .dot { width: 10px; height: 10px; border-radius: 50%; background: oklch(var(--hold-l) calc(var(--hold-c) * var(--cm)) var(--h)); }
+.chip.neutral .dot { background: var(--ink); }
+.chip[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.chip.off { color: var(--muted); }
+button:focus-visible, .key:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.key:focus { outline: none; }
+.key:focus-visible .cap { stroke: var(--accent); stroke-width: 2.5; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 16px 12px; min-width: 0; }
+.layer-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.layer-head h2 { margin: 0; font-size: 22px; font-weight: 700; text-wrap: balance; }
+.badge { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.badge.warn { color: var(--sys-ink); }
+.layer-desc { margin: 2px 0 10px; color: var(--muted); max-width: 72ch; }
+.scroll { overflow-x: auto; }
+.scroll svg { display: block; width: 100%; min-width: 700px; height: auto; }
+.all { display: flex; flex-direction: column; gap: 14px; }
+
+.readout {
+  display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline;
+  padding: 10px 14px; border-radius: 10px; background: var(--mod); min-height: 46px;
+}
+.readout code { font-family: var(--font-code); font-size: 13.5px; font-weight: 500; overflow-wrap: anywhere; }
+.readout .hint { color: var(--muted); }
+.readout-wrap { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 6px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px 20px; margin: 0; padding: 0; list-style: none; }
+.legend li { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.legend svg { flex: none; }
+.legend-title { margin: 6px 0 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+footer { color: var(--muted); font-size: 13px; max-width: 80ch; }
+footer code { font-family: var(--font-code); font-size: 12px; }
+
+svg text { font-family: var(--font-ui); }
+.cap { fill: var(--key); stroke: var(--key-edge); stroke-width: 1; }
+.cap.mod { fill: var(--mod); }
+.cap.tint { fill: oklch(var(--tint-l) calc(var(--tint-c) * var(--cm)) var(--h)); stroke: oklch(var(--edge-l) calc(var(--tint-c) * 1.8 * var(--cm)) var(--h)); }
+.cap.empty { fill: none; stroke: var(--line); stroke-dasharray: 3 3; }
+.cap.ghost { fill: none; stroke: var(--line); stroke-opacity: 0.55; }
+.cap.sys { fill: var(--sys); stroke: var(--sys-ink); }
+.cap.switch { fill: var(--key); stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 3; }
+.cap.held { stroke: var(--ink); stroke-width: 2.5; }
+.enc { fill: var(--mod); stroke: var(--key-edge); stroke-width: 1; }
+.t-tap { fill: var(--ink); font-weight: 600; text-anchor: middle; }
+.t-tap.dim { fill: var(--muted); font-weight: 400; }
+.t-sub { fill: var(--muted); font-size: 9px; text-anchor: middle; letter-spacing: 0.05em; }
+.t-hold { font-size: 9.5px; font-weight: 700; text-anchor: middle; letter-spacing: 0.02em; }
+.t-hold.lay { fill: oklch(var(--hold-l) calc(var(--hold-c) * var(--cm)) var(--h)); }
+.t-hold.mod { fill: var(--muted); }
+.t-sys { fill: var(--sys-ink); }
+.t-held { fill: var(--ink); font-size: 8.5px; font-weight: 700; letter-spacing: 0.1em; text-anchor: middle; }
+.key.go { cursor: pointer; }
+.key:hover .cap:not(.ghost), .key:hover .enc { stroke: var(--accent); }
+.key.sel .cap, .key.sel .enc { stroke: var(--accent); stroke-width: 2.5; }
+@media (prefers-reduced-motion: no-preference) { .cap, .enc { transition: stroke 0.12s; } }
+@media (max-width: 520px) { h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Miryoku G <small>layer map</small></h1>
+    <p class="lede">My <code>miryoku_g</code> keymaps, drawn from <code>keymap.c</code>. Hover or tap a key to see its QMK keycode. Tap a colored layer key to open its layer, and the held key to go back.</p>
+  </header>
+
+  <div class="controls">
+    <div class="group" id="board-group"><span class="seg-label">Board</span><div class="seg" id="board-seg"></div></div>
+    <div class="group"><span class="seg-label">View</span>
+      <div class="seg" id="view-seg">
+        <button type="button" data-view="one">One layer</button>
+        <button type="button" data-view="all">All layers</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chips" id="chips" role="group" aria-label="Layers"></div>
+
+  <div class="readout-wrap"><div class="readout" id="readout" aria-live="polite"><span class="hint">Hover or tap a key to see its QMK keycode and what it does.</span></div></div>
+
+  <main id="main"></main>
+
+  <section>
+    <p class="legend-title">Legend</p>
+    <ul class="legend" id="legend"></ul>
+  </section>
+
+  <footer>
+    Generated by <code>tools/draw-layers.sh</code> from each board's <code>keymap.c</code>; physical layouts come from QMK.
+    Modifiers: ⌃ Ctrl, ⌥ Alt/Option, ⌘ Cmd/Win, ⇧ Shift.
+  </footer>
+</div>
+
+<script src="data/sofle.js"></script>
+<script>
+/* Hand-written notes; the keys themselves all come from data/<board>.js */
+const LAYER_INFO = {
+  BASE: { name: "Base", desc: "Home-row mods on both hands: hold A S D F or J K L ' for Ctrl, Alt, Cmd and Shift. Each thumb key, and R, opens a layer when held." },
+  GAME: { name: "Game", desc: "Plain keys for games: no home-row mods or layer-taps, so every press registers instantly. Stays on until you switch back from GFn. Everything a mouse game needs is on the left half." },
+  GAMEFN: { name: "GFn", hue: 110, desc: "F-keys, arrows on H J K L, media keys and the way back to Miryoku. ▽ keys fall through to Game." },
+  NUM: { name: "Num", hue: 250, desc: "Numbers on the left in a numpad grid, with 0 and . on the thumbs. Mods on the right." },
+  SYML: { name: "SymL", hue: 300, desc: "Symbols on the left; accent dead keys and € on the left thumbs. Mods on the right." },
+  SYMR: { name: "SymR", hue: 335, desc: "Brackets and the remaining symbols on the right; accent dead keys and € on the right thumbs. Mods on the left." },
+  FUN: { name: "Fun", hue: 25, desc: "F-keys on the left, in the same grid as the numbers on Num. Mods on the right." },
+  NAV: { name: "Nav", hue: 150, desc: "Arrows on the right home row, clipboard above, Home / PgDn / PgUp / End below. Mods on the left." },
+  MOUSE: { name: "Mouse", hue: 200, desc: "Pointer on the right home row, wheel below, clicks on the right thumbs. Mods on the left." },
+  MEDIA: { name: "Media", hue: 75, desc: "Volume and playback on the right, RGB above, tapping-term controls below. Mods on the left." },
+  G0: { name: "G0", desc: "The plain ortho layout." },
+  G1: { name: "G1", hue: 110, desc: "F-keys, media and arrows. ▽ keys fall through to G0." },
+};
+const BOARD_INFO = {
+  sofle: {
+    // LAYOUT positions of the two knob clicks
+    knobs: { 42: "Left knob. Turn: ↓ / ↑ on every layer. Click: ", 43: "Right knob. Turn: Vol− / Vol+ on every layer. Click: " },
+  },
+};
+
+const MODS = {
+  LCTL: ["⌃", "Ctrl"], RCTL: ["⌃", "Ctrl"], LALT: ["⌥", "Alt"], RALT: ["⌥", "Alt"],
+  LGUI: ["⌘", "Cmd"], RGUI: ["⌘", "Cmd"], LSFT: ["⇧", "Shift"], RSFT: ["⇧", "Shift"],
+  ALGR: ["AltGr", "Right Alt (AltGr)"], ALL: ["Hyper", "Hyper (Ctrl+Alt+Cmd+Shift)"],
+};
+const HID = "HID keycode: works on Linux, does nothing on macOS or Windows.";
+const SIMPLE = {
+  QUOT: ["'"], COMM: [","], DOT: ["."], SLSH: ["/"], SCLN: [";"],
+  ESC: ["Esc", "", "Escape"], SPC: ["Space"], TAB: ["Tab"], ENT: ["Enter"], BSPC: ["Bksp", "", "Backspace"], DEL: ["Del", "", "Delete"],
+  PLUS: ["+"], ASTR: ["*"], EQL: ["="], MINS: ["-"], GRV: ["`"], TILD: ["~"], HASH: ["#"], AMPR: ["&"], PIPE: ["|"],
+  EXLM: ["!"], UNDS: ["_"], COLN: [":"], DLR: ["$"], PERC: ["%"], QUES: ["?"], BSLS: ["\\"], CIRC: ["^"],
+  LCBR: ["{"], RCBR: ["}"], LBRC: ["["], RBRC: ["]"], AT: ["@"], LPRN: ["("], RPRN: [")"], LABK: ["<"], RABK: [">"], DQUO: ['"'],
+  PSCR: ["PrtSc", "", "Print Screen (F13 on macOS)"], SCRL: ["ScrLk", "", "Scroll Lock (F14 on macOS)"],
+  PAUS: ["Pause", "", "Pause (F15 on macOS)"], APP: ["Menu", "", "Application / menu key. Does nothing on macOS."],
+  AGIN: ["Redo", "HID", "Again (redo). " + HID], PSTE: ["Paste", "HID", "Paste. " + HID], COPY: ["Copy", "HID", "Copy. " + HID],
+  CUT: ["Cut", "HID", "Cut. " + HID], UNDO: ["Undo", "HID", "Undo. " + HID],
+  LEFT: ["←", "", "Left arrow"], DOWN: ["↓", "", "Down arrow"], UP: ["↑", "", "Up arrow"], RGHT: ["→", "", "Right arrow"],
+  HOME: ["Home"], END: ["End"], PGDN: ["PgDn", "", "Page Down"], PGUP: ["PgUp", "", "Page Up"], INS: ["Ins", "", "Insert. Does nothing on macOS."],
+  MPRV: ["Prev", "media", "Previous track"], MNXT: ["Next", "media", "Next track"], MPLY: ["Play", "media", "Play / pause"],
+  MSTP: ["Stop", "media", "Stop playback"], VOLD: ["Vol−", "", "Volume down"], VOLU: ["Vol+", "", "Volume up"], MUTE: ["Mute", "", "Mute"],
+  MS_LEFT: ["←", "pointer", "Move pointer left"], MS_DOWN: ["↓", "pointer", "Move pointer down"], MS_UP: ["↑", "pointer", "Move pointer up"], MS_RGHT: ["→", "pointer", "Move pointer right"],
+  MS_WHLL: ["←", "wheel", "Scroll left"], MS_WHLD: ["↓", "wheel", "Scroll down"], MS_WHLU: ["↑", "wheel", "Scroll up"], MS_WHLR: ["→", "wheel", "Scroll right"],
+  MS_BTN1: ["Left", "click", "Left click"], MS_BTN2: ["Right", "click", "Right click"], MS_BTN3: ["Mid", "click", "Middle click"],
+  LNG1: ["Lang1", "", "Language 1 (Kana on macOS)"], LNG2: ["Lang2", "", "Language 2 (Eisū on macOS)"],
+};
+const SPECIAL = {
+  CW_TOGG: { tap: "Caps", sub: "word", desc: "Caps Word: capitalises the next word. With Shift: Caps Lock." },
+  UG_NEXT: { tap: "Mode", sub: "RGB", desc: "Lighting: next effect" },
+  UG_HUEU: { tap: "Hue+", sub: "RGB", desc: "Lighting: increase hue" },
+  UG_SATU: { tap: "Sat+", sub: "RGB", desc: "Lighting: increase saturation" },
+  UG_VALU: { tap: "Bri+", sub: "RGB", desc: "Lighting: increase brightness" },
+  UG_TOGG: { tap: "On/Off", sub: "RGB", desc: "Lighting: on / off" },
+  DT_UP: { tap: "Term+", sub: "tapping", desc: "Raise the tapping term by 5 ms (resets on power-off)" },
+  DT_DOWN: { tap: "Term−", sub: "tapping", desc: "Lower the tapping term by 5 ms (resets on power-off)" },
+  DT_PRNT: { tap: "Term?", sub: "tapping", desc: "Types out the current tapping term" },
+  U_EURO: { tap: "€", desc: "Types €. The keyboard detects the OS: Opt+Shift+2 on macOS, AltGr+5 on Windows and Linux (US International)." },
+};
+const DEAD = {
+  KC_E: { tap: "´", sub: "dead", desc: "Right Alt + E: acute accent dead key on macOS. Then a vowel: á é í ó ú." },
+  KC_GRV: { tap: "`", sub: "dead", desc: "Right Alt + `: grave accent dead key on macOS. Then a vowel: à è ì ò ù." },
+  KC_QUOT: { tap: "⌥'", desc: "Right Alt + ': types æ on macOS US/ABC." },
+};
+
+/* ---------- Board model, built from the generated data ---------- */
+function buildBoard(id, data) {
+  const ids = data.layers.map((l) => l.id);
+  const keys = Object.fromEntries(data.layers.map((l) => [l.id, l.keys]));
+  // Default layers: layer 0 and any layer a double-tap key switches to
+  const defaults = new Set([ids[0]]);
+  for (const l of data.layers) for (const k of l.keys) {
+    const m = k.match(/^TD\(U_TD_U_(\w+)\)$/);
+    if (m && ids.includes(m[1])) defaults.add(m[1]);
+  }
+  // Where each held layer is reached from: the layer-tap / MO keys on a default layer
+  const held = {};
+  for (const from of ids) {
+    if (!defaults.has(from)) continue;
+    keys[from].forEach((k, i) => {
+      const m = k.match(/^(?:LT|MO)\(U_(\w+)/);
+      if (m && !defaults.has(m[1])) {
+        held[m[1]] ??= { from, at: [] };
+        if (held[m[1]].from === from) held[m[1]].at.push(i);
+      }
+    });
+  }
+  return { id, name: data.name, ids, keys, defaults, held, geometry: data.geometry, info: BOARD_INFO[id] || {} };
+}
+const BOARDS = Object.fromEntries(Object.entries(window.KEYMAPS || {}).map(([id, d]) => [id, buildBoard(id, d)]));
+
+function layerInfo(id) { return LAYER_INFO[id] || { name: id, hue: 200, desc: "" }; }
+function layerName(id) { return layerInfo(id).name; }
+
+function key(tok, B) {
+  let m;
+  if (tok === "KC_NO") return { kind: "empty", code: "KC_NO", desc: "Does nothing." };
+  if (tok === "KC_TRNS") return { kind: "trns", tap: "▽", code: "KC_TRNS", desc: "Transparent: uses the key from the layer underneath." };
+  if ((m = tok.match(/^TD\(U_TD_U_(\w+)\)$/))) return { kind: "switch", tap: layerName(m[1]), sub: "2× tap", goto: m[1], code: tok, desc: `Double-tap: switch to ${layerName(m[1])}. It stays on until you switch again.` };
+  if (tok === "TD(U_TD_BOOT)") return { kind: "sys", tap: "Boot", sub: "2× tap", code: tok, desc: "Double-tap: reboot into the bootloader to flash firmware." };
+  if (tok === "QK_BOOT") return { kind: "sys", tap: "Boot", code: tok, desc: "Press: reboot into the bootloader." };
+  if ((m = tok.match(/^LT\(U_(\w+),(\w+)\)$/))) {
+    const b = key(m[2], B);
+    return { ...b, hold: layerName(m[1]), layer: m[1], holdKind: "lay", kind: "trigger", goto: m[1], code: tok, desc: `Tap: ${b.desc || b.tap}. Hold: ${layerName(m[1])} layer.` };
+  }
+  if ((m = tok.match(/^MO\(U_(\w+)\)$/))) return { tap: layerName(m[1]), sub: "hold", layer: m[1], kind: "trigger", goto: m[1], code: tok, desc: `Hold: ${layerName(m[1])} layer.` };
+  if ((m = tok.match(/^(\w+)_T\((\w+)\)$/)) && MODS[m[1]]) {
+    const b = key(m[2], B), md = MODS[m[1]];
+    const hold = m[1] === "ALGR" || m[1] === "ALL" ? md[0] : `${md[0]} ${md[1]}`;
+    return { ...b, hold, holdKind: "mod", code: tok, desc: `Tap: ${b.desc || b.tap}. Hold: ${md[1]}.` };
+  }
+  if ((m = tok.match(/^RALT\((\w+)\)$/)) && DEAD[m[1]]) return { kind: "content", ...DEAD[m[1]], code: tok };
+  const k = tok.replace(/^KC_/, "");
+  if (MODS[k]) { const md = MODS[k]; return { kind: "mod", tap: md[0], sub: md[0] === "AltGr" ? "" : md[1], code: tok, desc: md[1] }; }
+  if (/^KC_([A-Z0-9]|F\d+)$/.test(tok)) return { kind: "content", tap: k, code: tok };
+  if (SPECIAL[tok]) return { kind: "content", ...SPECIAL[tok], code: tok };
+  if (SIMPLE[tok] || SIMPLE[k]) { const [tap, sub, desc] = SIMPLE[tok] || SIMPLE[k]; return { kind: "content", tap, sub, desc, code: tok }; }
+  return { kind: "content", tap: k, code: tok };
+}
+
+/* ---------- Rendering ---------- */
+const U = 58;
+let REG = [];
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+function hueStyle(B, id) { return id && !B.defaults.has(id) ? `--h:${layerInfo(id).hue ?? 200};--cm:1` : ""; }
+function fontSize(t) { const n = [...t].length; return n <= 1 ? 19 : n <= 2 ? 16 : n <= 4 ? 14 : n <= 5 ? 12.5 : 11; }
+
+function placement(g) {
+  const w = (g.w || 1) * U, h = (g.h || 1) * U;
+  const rot = g.r ? `rotate(${g.r} ${((g.rx ?? g.x) * U).toFixed(1)} ${((g.ry ?? g.y) * U).toFixed(1)}) ` : "";
+  return { w, h, tf: `${rot}translate(${(g.x * U).toFixed(1)} ${(g.y * U).toFixed(1)})` };
+}
+
+function capSvg(B, layer, i, k, heldKey) {
+  const { w, h, tf } = placement(B.geometry[i]);
+  const rect = (cls) => `<rect class="cap ${cls}" x="2" y="2" width="${w - 4}" height="${h - 4}" rx="7"/>`;
+  const r = REG.length, cx = w / 2;
+  const knob = B.info.knobs && B.info.knobs[i];
+  if (heldKey) {
+    const from = B.held[layer].from;
+    REG.push({ code: heldKey.code, desc: `You hold this key to stay on ${layerName(layer)}. Click it to go back to ${layerName(from)}.`, goto: from });
+    const fs = fontSize(heldKey.tap || "");
+    return `<g class="key go" data-r="${r}" tabindex="0" role="button" aria-label="${esc(heldKey.tap)} (held): back to ${esc(layerName(from))}" transform="${tf}" style="${hueStyle(B, layer)}">${rect("tint held")}<text class="t-held" x="${cx}" y="14">HELD</text><text class="t-tap" x="${cx}" y="${(h / 2 + fs * 0.35 + 3).toFixed(1)}" font-size="${fs}">${esc(heldKey.tap || "")}</text></g>`;
+  }
+  REG.push({ code: k.code, desc: (knob ? knob + (k.kind === "empty" ? "nothing." : "") : "") + (k.desc || k.tap || ""), goto: k.goto });
+  if (knob) {
+    const label = k.kind === "empty" ? "knob" : k.tap;
+    return `<g class="key" data-r="${r}" tabindex="0" aria-label="knob" transform="${tf}"><circle class="enc" cx="${cx}" cy="${h / 2}" r="${U * 0.42}"/><text class="t-sub" x="${cx}" y="${h / 2 - 7}">knob</text><text class="t-tap" x="${cx}" y="${h / 2 + 10}" font-size="12">${esc(k.kind === "empty" ? "" : label)}</text></g>`;
+  }
+  let cls = "", style = "", tapCls = "t-tap";
+  switch (k.kind) {
+    case "empty": return `<g class="key" data-r="${r}" transform="${tf}">${rect("empty")}</g>`;
+    case "trns": cls = "empty"; tapCls = "t-tap dim"; break;
+    case "mod": cls = "mod"; break;
+    case "sys": cls = "sys"; tapCls = "t-tap t-sys"; break;
+    case "switch": cls = "switch"; break;
+    case "trigger": cls = "tint"; style = hueStyle(B, k.layer); break;
+    default: if (!B.defaults.has(layer)) { cls = "tint"; style = hueStyle(B, layer); }
+  }
+  const tap = k.tap || "", fs = fontSize(tap), parts = [];
+  const ty = h / 2 + fs * 0.35 - (k.hold ? 3 : 0) + (k.sub ? 2 : 0);
+  if (k.sub) parts.push(`<text class="t-sub${k.kind === "sys" ? " t-sys" : ""}" x="${cx}" y="14">${esc(k.sub)}</text>`);
+  parts.push(`<text class="${tapCls}" x="${cx}" y="${ty.toFixed(1)}" font-size="${fs}">${esc(tap)}</text>`);
+  if (k.hold) parts.push(`<text class="t-hold ${k.holdKind}" x="${cx}" y="${h - 8}">${esc(k.hold)}</text>`);
+  const go = k.goto && B.ids.includes(k.goto);
+  return `<g class="key${go ? " go" : ""}" data-r="${r}" tabindex="0"${go ? ' role="button"' : ""} aria-label="${esc(k.code)}" transform="${tf}" style="${style}">${rect(cls)}${parts.join("")}</g>`;
+}
+
+function boardSvg(B, layer) {
+  const H = B.held[layer];
+  const heldAt = new Set(H ? H.at : []);
+  const out = B.keys[layer].map((tok, i) => capSvg(B, layer, i, key(tok, B), heldAt.has(i) ? key(B.keys[H.from][i], B) : null));
+  let maxX = 0, maxY = 0;
+  for (const g of B.geometry) { maxX = Math.max(maxX, g.x + (g.w || 1)); maxY = Math.max(maxY, g.y + (g.h || 1)); }
+  const pad = 0.12 * U;
+  return `<svg viewBox="${-pad} ${-pad} ${maxX * U + 2 * pad} ${maxY * U + 2 * pad}" role="group" aria-label="${esc(B.name)} ${esc(layerName(layer))} layer">${out.join("")}</svg>`;
+}
+
+function badge(B, layer) {
+  if (layer === B.ids[0]) return "default layer";
+  if (B.defaults.has(layer)) return "2× tap to switch";
+  const H = B.held[layer];
+  if (!H) return "no key opens it";
+  return "hold " + H.at.map((i) => { const k = key(B.keys[H.from][i], B); return k.kind === "trigger" && k.tap !== layerName(layer) ? k.tap : "GFn"; })
+    .filter((v, i, a) => a.indexOf(v) === i).join(" or ");
+}
+
+function layerCard(B, layer) {
+  const info = layerInfo(layer);
+  return `<section class="card"><div class="layer-head"><h2>${esc(info.name)}</h2><span class="badge">${esc(badge(B, layer))}</span></div><p class="layer-desc">${esc(info.desc)}</p><div class="scroll">${boardSvg(B, layer)}</div></section>`;
+}
+
+/* ---------- State & UI ---------- */
+const $ = (id) => document.getElementById(id);
+const boardIds = Object.keys(BOARDS);
+const state = { board: boardIds[0], layer: null, view: "one" };
+try {
+  const saved = JSON.parse(localStorage.getItem("miryoku-map") || "{}");
+  if (BOARDS[saved.board]) state.board = saved.board;
+  state.layer = saved.layer;
+  if (saved.view === "all" || saved.view === "one") state.view = saved.view;
+} catch (e) {}
+// Links like #sofle or #sofle/NAV open that board and layer
+const [hashBoard, hashLayer] = location.hash.slice(1).split("/");
+if (BOARDS[hashBoard]) { state.board = hashBoard; if (hashLayer) { state.layer = hashLayer; state.view = "one"; } }
+function fixLayer() { if (!BOARDS[state.board].ids.includes(state.layer)) state.layer = BOARDS[state.board].ids[0]; }
+fixLayer();
+
+function save() { try { localStorage.setItem("miryoku-map", JSON.stringify(state)); } catch (e) {} }
+
+$("board-seg").innerHTML = boardIds.map((id) => `<button type="button" data-board="${id}">${esc(BOARDS[id].name)}</button>`).join("");
+if (boardIds.length < 2) $("board-group").hidden = true;
+
+function render() {
+  REG = [];
+  const B = BOARDS[state.board];
+  document.querySelectorAll("#board-seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.board === state.board)));
+  document.querySelectorAll("#view-seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.view === state.view)));
+  $("chips").innerHTML = B.ids.map((id) => {
+    const on = state.view === "one" && id === state.layer;
+    return `<button type="button" class="chip${B.defaults.has(id) ? " neutral" : ""}" data-layer="${id}" aria-pressed="${on}" style="${hueStyle(B, id)}"><span class="dot"></span>${esc(layerName(id))}</button>`;
+  }).join("");
+  $("main").innerHTML = state.view === "one" ? layerCard(B, state.layer) : `<div class="all">${B.ids.map((id) => layerCard(B, id)).join("")}</div>`;
+  save();
+}
+
+function show(entry) { if (entry) $("readout").innerHTML = `<code>${esc(entry.code)}</code><span>${esc(entry.desc)}</span>`; }
+function activate(el) {
+  const entry = REG[+el.dataset.r];
+  show(entry);
+  if (entry && entry.goto && BOARDS[state.board].ids.includes(entry.goto)) { state.layer = entry.goto; state.view = "one"; render(); }
+  else { document.querySelectorAll(".key.sel").forEach((n) => n.classList.remove("sel")); el.classList.add("sel"); }
+}
+
+document.addEventListener("pointerover", (e) => { const k = e.target.closest(".key"); if (k) show(REG[+k.dataset.r]); });
+document.addEventListener("focusin", (e) => { const k = e.target.closest && e.target.closest(".key"); if (k) show(REG[+k.dataset.r]); });
+document.addEventListener("click", (e) => {
+  const k = e.target.closest(".key"); if (k) return activate(k);
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.board) { state.board = b.dataset.board; fixLayer(); render(); }
+  else if (b.dataset.view) { state.view = b.dataset.view; render(); }
+  else if (b.dataset.layer) { state.layer = b.dataset.layer; state.view = "one"; render(); }
+});
+document.addEventListener("keydown", (e) => {
+  const k = e.target.closest && e.target.closest(".key");
+  if (k && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); activate(k); }
+});
+
+/* ---------- Legend ---------- */
+function swatch(cls, style, inner = "") {
+  return `<svg width="34" height="34" viewBox="0 0 ${U} ${U}" aria-hidden="true" style="${style}"><rect class="cap ${cls}" x="2" y="2" width="${U - 4}" height="${U - 4}" rx="7"/>${inner}</svg>`;
+}
+$("legend").innerHTML = [
+  [swatch("tint", "--h:250;--cm:1", `<text class="t-hold lay" x="${U / 2}" y="${U - 8}" style="font-size:14px">Num</text>`), "Belongs to a layer, or opens it when held. Same color as the layer chip."],
+  [swatch("tint held", "--h:250;--cm:1", `<text class="t-held" x="${U / 2}" y="16" style="font-size:12px">HELD</text>`), "The key you're holding to reach this layer. Click it to go back."],
+  [swatch("", "", `<text class="t-hold mod" x="${U / 2}" y="${U - 8}" style="font-size:13px">⇧ Shift</text>`), "Bottom line: what the key does when held (home-row mod)."],
+  [swatch("mod", "", `<text class="t-tap" x="${U / 2}" y="37" font-size="24">⇧</text>`), "Plain modifier."],
+  [swatch("switch", ""), "Double-tap to switch to another layer that stays on."],
+  [swatch("sys", ""), "Bootloader, for flashing firmware."],
+  [swatch("empty", ""), "Does nothing, or ▽ falls through to the layer underneath."],
+].map(([s, t]) => `<li>${s}<span>${t}</span></li>`).join("");
+
+render();
+</script>
+</body>
+</html>

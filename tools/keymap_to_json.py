@@ -28,7 +28,8 @@ def split_args(s):
     return args
 
 
-def main(path, keyboard):
+def expand_keymap(path):
+    """Return (layer names in index order, {name: [raw keycodes]}) with the U_ prefix kept."""
     src = open(path).read().replace("#include QMK_KEYBOARD_H", "")
     # Mark each LAYOUT(...) call so the expanded keys are easy to find
     src = "#define LAYOUT(...) @@LAYOUT(__VA_ARGS__)@@\n#define _______ KC_TRNS\n" + src
@@ -36,22 +37,24 @@ def main(path, keyboard):
 
     names = re.search(r"enum\s+layer_names\s*\{([^}]*)\}", out).group(1)
     order = [n.strip() for n in names.split(",") if n.strip()]
-    index = {n: i for i, n in enumerate(order)}
-
     layers = {}
     for m in re.finditer(r"\[\s*(U_\w+)\s*\]\s*=\s*@@LAYOUT\((.*?)\)@@", out, re.S):
-        keys = split_args(m.group(2))
-        # Layer references by number, the way QMK's own keymap.json has them
-        keys = [re.sub(r"\b(LT|MO|TG|TO|DF|OSL)\((U_\w+)", lambda k: f"{k.group(1)}({index[k.group(2)]}", key) for key in keys]
-        layers[m.group(1)] = keys
+        layers[m.group(1)] = [re.sub(r"\s+", "", key) for key in split_args(m.group(2))]
+    return order, layers
 
+
+def main(path, keyboard):
+    order, layers = expand_keymap(path)
+    index = {n: i for i, n in enumerate(order)}
+    # Layer references by number, the way QMK's own keymap.json has them
+    numbered = lambda key: re.sub(r"\b(LT|MO|TG|TO|DF|OSL)\((U_\w+)", lambda k: f"{k.group(1)}({index[k.group(2)]}", key)
     json.dump(
         {
             "keyboard": keyboard,
             "keymap": "miryoku_g",
             "layout": "LAYOUT",
             "layer_names": [n.removeprefix("U_") for n in order],
-            "layers": [layers[n] for n in order],
+            "layers": [[numbered(key) for key in layers[n]] for n in order],
         },
         sys.stdout,
         indent=1,
