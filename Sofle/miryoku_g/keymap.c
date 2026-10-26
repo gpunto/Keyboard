@@ -109,19 +109,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                            KC_NO,           KC_NO,             KC_NO,                    KC_ENT,            KC_BSPC,           KC_DEL
     ),
     [U_NAVM] = LAYOUT_miryoku(
-        TD(U_TD_BOOT),    BANANA3,         BANANA2,         BANANA1,           DT_UP,                    RGB_MOD,           RGB_HUI,           RGB_SAI,           RGB_VAI,           RGB_TOG,
+        TD(U_TD_BOOT),    BANANA3,         BANANA2,         BANANA1,           DT_UP,                    UG_NEXT,           UG_HUEU,           UG_SATU,           UG_VALU,           UG_TOGG,
         KC_LCTL,          KC_LALT,         KC_LGUI,         KC_LSFT,           DT_DOWN,                  KC_LEFT,           KC_DOWN,           KC_UP,             KC_RGHT,           CW_TOGG,
         KC_NO,            KC_ALGR,         KC_NO,           KC_NO,             DT_PRNT,                  KC_MPRV,           KC_VOLD,           KC_VOLU,           KC_MNXT,           KC_MPLY,
                                            KC_NO,           KC_NO,             KC_NO,                    KC_NO,             KC_NO,             KC_NO
     ),
     [U_MOUSE] = LAYOUT_miryoku(
         TD(U_TD_BOOT),    BANANA3,         BANANA2,         BANANA1,           KC_NO,                    KC_AGIN,           KC_PSTE,           KC_COPY,           KC_CUT,            KC_UNDO,
-        KC_LCTL,          KC_LALT,         KC_LGUI,         KC_LSFT,           KC_NO,                    KC_MS_L,           KC_MS_D,           KC_MS_U,           KC_MS_R,           KC_NO,
-        KC_NO,            KC_ALGR,         KC_NO,           KC_NO,             KC_NO,                    KC_WH_L,           KC_WH_D,           KC_WH_U,           KC_WH_R,           KC_NO,
-                                           KC_NO,           KC_NO,             KC_NO,                    KC_BTN2,           KC_BTN1,           KC_BTN3
+        KC_LCTL,          KC_LALT,         KC_LGUI,         KC_LSFT,           KC_NO,                    MS_LEFT,           MS_DOWN,           MS_UP,           MS_RGHT,           KC_NO,
+        KC_NO,            KC_ALGR,         KC_NO,           KC_NO,             KC_NO,                    MS_WHLL,           MS_WHLD,           MS_WHLU,           MS_WHLR,           KC_NO,
+                                           KC_NO,           KC_NO,             KC_NO,                    MS_BTN2,           MS_BTN1,           MS_BTN3
     ),
     [U_MEDIA] = LAYOUT_miryoku(
-        TD(U_TD_BOOT),    BANANA3,         BANANA2,         BANANA1,           KC_NO,                    RGB_MOD,           RGB_HUI,           RGB_SAI,           RGB_VAI,           RGB_TOG,
+        TD(U_TD_BOOT),    BANANA3,         BANANA2,         BANANA1,           KC_NO,                    UG_NEXT,           UG_HUEU,           UG_SATU,           UG_VALU,           UG_TOGG,
         KC_LCTL,          KC_LALT,         KC_LGUI,         KC_LSFT,           KC_NO,                    KC_MPRV,           KC_VOLD,           KC_VOLU,           KC_MNXT,           KC_NO,
         KC_NO,            KC_ALGR,         KC_NO,           KC_NO,             KC_NO,                    KC_NO,             KC_NO,             DT_UP,             DT_DOWN,           DT_PRNT,
                                            KC_NO,           KC_NO,             KC_NO,                    KC_MSTP,           KC_MPLY,           KC_MUTE
@@ -132,9 +132,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 const key_override_t capsword_key_override = ko_make_basic(MOD_MASK_SHIFT, CW_TOGG, KC_CAPS);
 
-const key_override_t **key_overrides = (const key_override_t *[]){
+const key_override_t *key_overrides[] = {
     &capsword_key_override,
-    NULL
 };
 
 // display
