@@ -344,5 +344,6 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             tap_code(KC_VOLU);
         }
     }
-    return true;
+    // false: skip the keyboard-level handler, which would also send volume/page keys
+    return false;
 }
